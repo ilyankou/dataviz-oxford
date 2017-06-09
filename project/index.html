@@ -5,7 +5,7 @@
     <title>Visualizing Cities</title>
     <link rel="stylesheet" href="style.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/data.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.js"
       integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
@@ -64,6 +64,7 @@
         For this, I used Principle Component Analysis (PCA) to calculate principle
         components of the original dataset, and selected the two with highest variances.
         The data was centered and standardized, and matplotlib's PCA function was used.
+        To plot the results, I used a scatter plot from <a href="highcharts.com">Highcharts</a>.
       </p>
       <p>
         I was very happy to see that nearly all US cities are clustered together in the bottom
