@@ -1,0 +1,126 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+}
+
+.main-block {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  background-color: white;
+}
+
+.timeline-popup .leaflet-popup-close-button {
+  display: none;
+}
+
+.timeline-popup .leaflet-popup-content-wrapper {
+  border-radius: 0;
+  text-align: center;
+}
+
+.timeline-popup .leaflet-popup-content {
+  margin: 5px;
+}
+
+.custom-control {
+  position: absolute;
+  left: 0;
+  color: black;
+  background: #80FC8F;
+  font-size: 20px;
+  padding: 5px 15px;
+  font-weight: bold;
+  z-index: 999;
+}
+
+#timeline-header {
+  cursor: pointer;
+}
+
+#compare-header {
+  position: absolute;
+  left: 0;
+  z-index: 999;
+  background: none;
+  color: white;
+}
+
+#compare-header sup,
+#compare-header sub,
+#compare-header span {
+  background: black;
+  color: white;
+  padding: 2px 5px;
+}
+
+.pink {
+  background-color: pink !important;
+}
+
+sup { vertical-align: top; font-size: 0.6em; }
+sub { vertical-align: bottom; font-size: 0.6em; }
+
+.fa-pause,
+.fa-play {
+  width: 20px;
+}
+
+#hello {
+  background-image: url(hello.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#hello div {
+  font-size: 12vh;
+  padding-top: 44vh;
+  text-align: center;
+}
+
+#hello div span {
+  background: white;
+  padding: 0 1vw;
+  font-family: Impact, Charcoal;
+  color: black;
+}
+
+.my-text {
+  height: auto;
+  padding-bottom: 6vh;
+}
+
+.my-text p {
+  font-size: 20pt;
+  padding: 6vh 20vw;
+  padding-bottom: 0;
+  margin: 0;
+}
+
+#data-table {
+  font-size: 9pt;
+  width: 100% !important;
+  padding: 0;
+  margin: 0;
+}
+
+.td-right {
+  text-align: right;
+}
+
+.td-center {
+  text-align: center;
+}
+
+select {
+  height: 100%;
+  font-size: 20px;
+}
+
+.code {
+  background: silver;
+  font-family: monospace;
+  padding-left: 5px;
+  padding-right: 5px;
+}

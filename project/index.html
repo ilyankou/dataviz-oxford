@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Visualizing Cities</title>
+    <link rel="stylesheet" href="style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"
+      integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+      integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+      crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+     integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+     crossorigin=""></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="leaflet-providers/leaflet-providers.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+
+  </head>
+  <body>
+
+    <div id="hello" class="main-block">
+      <div><span>Visualizing Cities</span></div>
+    </div>
+
+    <div class="main-block my-text">
+      <p>
+        For this data visualization project, I used Bloomberg's
+        <a href="https://knoema.com/atlas/sources/Bloomberg?topic=Cities">Global Cities Index</a> dataset from 2014.
+        It contains interesting economic and environmental information about major cities around the world,
+        although does not include a single city from Africa, South-East Asia or Eastern Europe.
+      </p>
+
+      <p>
+        From the dataset, I selected 51 cities with biggest metropolitan areas,
+        and 11 of most interesting (in my opinion) parameters. And this is the
+        <a href="process-csv.py">Python script</a>
+        that did the cherry picking from the <a href="bloomberg.csv">original <i>.csv</i></a>.
+      </p>
+
+      <p>
+        I stored the final processed data in a <a href="https://docs.google.com/spreadsheets/d/1bCt6OzyH7D0mbUd7uGKuVTbDmfcTDfto-NFnrZu9ldM/edit?usp=sharing">
+        Google sheet</a> so that it is easy to make changes to the data if needed (also because in this century cloud is sexy). The sheet is accessed
+        by <a href="https://github.com/jsoma/tabletop">Tabletop</a> and transformed into JSON
+        each time this page is loaded. Below is the table showing the selected data I was visualizing.
+      </p>
+    </div>
+
+    <div class="main-block" style="height: auto;">
+      <table id="data-table" class="compact td-right"></table>
+    </div>
+
+    <div class="main-block my-text">
+      <p>
+        I wanted to see if cities could be clustered based on their eleven parameters.
+        To be able to plot this in 2D, 11 dimensions need to be reduced to only 2.
+        For this, I used Principle Component Analysis (PCA) to calculate principle
+        components of the original dataset, and selected the two with highest variances.
+        The data was centered and standardized, and matplotlib's PCA function was used.
+      </p>
+      <p>
+        I was very happy to see that nearly all US cities are clustered together in the bottom
+        right corner. The two outliers - St. Louis and Minneapolis, are above the cluster (due to extremely big green areas per million people).
+        From the dataset, nearly all US cities have high GDP per capita, low unemployment rate,
+        small population density, and high CO<sub>2</sub> emissions per capita. Each city's
+        population comparing to overall national population is insignificant.
+      </p>
+      <p>
+        South Korean and Japanese cities form a small cluster in the middle bottom,
+        below the European cities. Their unemployment rate is very small, population density
+        is high, green area per million people is extremely low, and air pollution is high.
+      </p>
+      <p>
+        Seoul is the most visible outlier. Why? To understand that, I sorted each column
+        in the table and checked if Seoul is at the top or at the bottom of the list. I figured
+        that Seoul has the highest population density among 51 cities, as well as the highest
+        percentage of all citizens living in the metropolitan area (almost 50%!), and as a result
+        very high percentage of country's GDP is from there. It has one of the lowest unemployment rates,
+        very little green areas, low CO<sub>2</sub> emissions, yet extremely high air pollution.
+      </p>
+      <p>
+        Athens is similar in a way that 1/3 of Greece's citizens live in the capital's metropolitan area, and as a result 44% of
+        GDP is produced there. But unlike Seoul, Athens has the highest unemployment rate among all compared cities.
+      </p>
+      <p>
+        I was expecting to see London, New York, and Tokyo being closer together, but they stretched in the bottom
+        part of the graph. Vienna, for many years being considered the most liveable city, turned out to have the highest <i>y</i> coordinate!
+      </p>
+    </div>
+
+    <div id="cities-scatter" class="main-block"></div>
+    <script src="scatter.js"></script>
+
+    <div class="main-block my-text">
+      <p>
+        In the second visualization, I wanted to show the map with all data I had for each city.
+        Instead of designing complicated glyphs that are able to represent 11 parameters,
+        I used a timeline-like approach: every two seconds or so, the information would change.
+        But instead of showing historic data for one parameter, as one might expect,
+        every update of my map shows a completely different parameter.
+      </p>
+      <p>
+        I chose to represent each city with a circle icon whose radius depends on the current
+        parameter's value for that city. To get coordinates of each city, I put to use an old script
+        I developed for Google Sheets, <a href="https://github.com/ilyankou/geocoder-for-google-sheets">geocoder-for-google-sheets</a>.
+        For each parameter, I determined the minimum (radius = 2px) and maximum (radius = 20px) value.
+        I then calculated radius for each datapoint (city) as something between 2 and 20 pixels.
+      </p>
+      <p>
+        This visualization turned out to be extremely effective for determining regional features for cities.
+        For example, it is easy to observe that US cities have very high GDP per capita and CO<sub>2</sub> emission rates, or that
+        Southern European cities (Lisbon, Madrid, Barcelona, Naples, Athens) have ridiculously high
+        unemployment rates comparing to the rest of the world, or that the share of urbanised area in the US is higher
+        on the East Coast than the rest of the country.
+      </p>
+    </div>
+
+    <div id="cities-timeline" class="main-block">
+      <div id="timeline-header" class="custom-control"></div>
+    </div>
+    <script src="timeline.js"></script>
+
+    <div class="main-block my-text">
+      <p>
+        The final visualization is a map which allows you to compare two parameters
+        across all cities. The value of the first parameter is expressed through the circle's
+        radius, whereas the value of the second parameter influences its color (green for low,
+        red for high values). The idea was that users can find the relationships between two
+        different parameters. For instance, if you compare Population Density and Air Pollution,
+        you may observe that often higher density (bigger circles) means higher air pollution (more red).
+        <b>But remember that corellation does not mean causation!</b>
+      </p>
+      <p>
+        To calculate colors for different values, I discovered an elegant solution:
+        to use HSL color model, and calculate hue as
+        <span class="code">var hue = ((1 - value) * 120)</span>, where <i>value</i> is
+        between 0 and 1. When <i>value</i> is 1, <span class="code">hue = 0</span> (red).
+        When <i>value</i> is 0, <span class="code">hue = 120</span> (green).
+      </p>
+    </div>
+
+    <div id="cities-compare" class="main-block">
+      <div id="compare-header" class="custom-control">
+        <sub>shape</sub><select id="var-x"></select> <span>vs</span>
+        <select id="var-y"></select><sup>color</sup>
+      </div>
+    </div>
+    <script src="compare.js"></script>
+
+    <script src="load-data.js"></script>
+
+  </body>
+</html>

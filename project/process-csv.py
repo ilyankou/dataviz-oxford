@@ -1,8 +1,9 @@
 import csv
 
 from matplotlib.mlab import PCA
-#from matplotlib.mlab import project
 from numpy import genfromtxt
+from io import StringIO
+import numpy as np
 
 i = 0
 
@@ -20,7 +21,6 @@ with open('bloomberg.csv', 'r') as csvfile:
             citiesInOrder.append(row['metropolitan-areas'])
         data[row['metropolitan-areas']][row['variables']] = row['Value']
 
-#print(data['Berlin'])
 
 # Leaving only the cities whose metro population is over 3M
 for key in citiesInOrder:
@@ -29,8 +29,6 @@ for key in citiesInOrder:
     if (int(data[key]['Total population metropolitan area (persons)']) > 2500000):
         cities.append(key)
 
-#print(len(cities))
-#print(cities)
 
 skip_variables = [
     'Sprawl index',
@@ -67,34 +65,20 @@ skip_variables = [
 
 my_variables = [
     'GDP per capita (US$)',
-    'GDP (millions US$)',
     'Unemployment as a share of the labour force',
     'Population density (persons per km2)',
     'Green area per million people (square meters per million person)',
-    'Old-age-dependency ratio',
-    'Concentration of population in the core (%)',
     'CO2 emissions per capita (tonnes per inhabitant)',
-    'Total population metropolitan area (persons)',
-    'Population, City, Old (65 more)',
-    'Total land area of the city (km2)',
-    'Urbanised area (km2)',
-    'Labour productivity',
-    'Estimated average exposure to air pollution (PM2.5) based on imagery data'
+    'Estimated average exposure to air pollution (PM2.5) based on imagery data',
+    'Concentration of population in the core (%)',
+    'Urbanised area share (%)',
+    'Population of the metropolitan area as a share of national value (%)',
+    'Territorial fragmentation',
+    'GDP of the metropolitan area as share of national value (%)'
 ]
 
-
-
-for v in data['Berlin']:
-    if not(v in skip_variables):     #if v in my_variables:
-        variables.append("\"" + v + "\"")
-    #print(v)
-
-"""
 for v in my_variables:
     variables.append("\"" + v + "\"")
-"""
-
-#print(len(cities))
 
 first_line = ','.join(variables) + ',City'
 
@@ -107,25 +91,31 @@ for city in cities:
             row += 'NODATA,'
         else:
             row += data[city][v.replace('"', '')] + ','
-    print(row + city)
+    #print(row + city)
 
 
-test = genfromtxt('data.csv', delimiter=',', skip_header=1, usecols=(0,len(my_variables)-1))
-#test = test0[1:]
+test = genfromtxt('data.csv', dtype=None, delimiter=',', skip_header=1, usecols=(0,1,2,3,4,5,6,7,8,9,10))
 
+#print(test)
+"""
+cities = []
+c = 0
+for t in test:
+    cities.append(t[11])
+    print(t[11])
+"""
+#print(test.shape)
+
+#np.resize(test, (51,12))
+print(test.shape)
+
+#z = np.delete(test, 0, axis=1)
+
+#cities = test[:11]
 print(test)
 
-#print(len(test))
-#print(test)
 
 pca = PCA(test)
 
-#print('#######')
-#print('%d %d %d %d' % (pca.numrows, pca.numcols, len(pca.Y), len(pca.Y[0])))
-#print('#####')
-
-
-#print(len(pca.Wt[0]))#[0])
-
 for i in range(0,len(cities)):
-    print("%f \t %f \t %s" % (pca.a[i][0], pca.a[i][1], cities[i]))
+    print("%f \t %f" % (pca.Y[i][0], pca.Y[i][1]))
